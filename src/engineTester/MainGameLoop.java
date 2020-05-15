@@ -1,7 +1,9 @@
 package engineTester;
 
+import entities.Entity;
 import models.TexturedModel;
 import org.lwjgl.opengl.Display;
+import org.lwjgl.util.vector.Vector3f;
 import renderEngine.DisplayManager;
 import renderEngine.Loader;
 import models.RawModel;
@@ -38,13 +40,15 @@ public class MainGameLoop {
 
         RawModel model = loader.loadToVao(vertices, textureCoords, indices);
         ModelTexture texture = new ModelTexture(loader.loadTexture("image"));
-        TexturedModel texturedModel = new TexturedModel(model, texture);
+        TexturedModel staticModel = new TexturedModel(model, texture);
+
+        Entity entity = new Entity(staticModel, new Vector3f(-1, 0, 0), 0, 0, 0, 1);
 
         while (!Display.isCloseRequested()) {
             // game logic
             renderer.prepare();
             shader.start();
-            renderer.render(texturedModel);
+            renderer.render(entity, shader);
             shader.stop();
             DisplayManager.updateDisplay();
         }

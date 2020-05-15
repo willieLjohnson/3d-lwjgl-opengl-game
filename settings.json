@@ -19,7 +19,7 @@
             "command": "--add-metadata",
             "dependency": null,
             "options": null,
-            "state": false,
+            "state": true,
             "tooltip": "Write metadata to the video file."
         },
         "Add thumbnail": {
@@ -27,7 +27,7 @@
             "command": "--embed-thumbnail",
             "dependency": "Convert to audio",
             "options": null,
-            "state": false,
+            "state": true,
             "tooltip": "Include thumbnail on audio files."
         },
         "Audio quality": {
@@ -39,7 +39,7 @@
                 "5",
                 "9"
             ],
-            "state": false,
+            "state": true,
             "tooltip": "Specify ffmpeg/avconv audio quality.\ninserta value between\n0 (better) and 9 (worse)for VBR\nor a specific bitrate like 128K"
         },
         "Best video quality": {
@@ -57,7 +57,7 @@
             "options": [
                 "mp3"
             ],
-            "state": false,
+            "state": true,
             "tooltip": "Convert video files to audio-only files\nRequires ffmpeg, avconv and ffprobe or avprobe."
         },
         "Custom referer": {
@@ -105,9 +105,10 @@
             "command": "-o {}",
             "dependency": null,
             "options": [
+                "I:/Music/MIX/",
                 "E:/home/Documents/hub/3d-opengl-java-game/DL/"
             ],
-            "state": false,
+            "state": true,
             "tooltip": "Select download location."
         },
         "Download order": {
@@ -177,7 +178,7 @@
             "command": "-i",
             "dependency": null,
             "options": null,
-            "state": false,
+            "state": true,
             "tooltip": "Ignores errors, and jumps to next element instead of stopping."
         },
         "Keep archive": {
