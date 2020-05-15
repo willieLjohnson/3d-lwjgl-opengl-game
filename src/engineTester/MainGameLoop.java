@@ -42,10 +42,10 @@ public class MainGameLoop {
         ModelTexture texture = new ModelTexture(loader.loadTexture("image"));
         TexturedModel staticModel = new TexturedModel(model, texture);
 
-        Entity entity = new Entity(staticModel, new Vector3f(-1, 0, 0), 0, 0, 0, 1);
+        Entity entity = new Entity(staticModel, new Vector3f(0, 0, 0), 0, 0, 0, 1);
 
         while (!Display.isCloseRequested()) {
-            // game logic
+            entity.increasePosition(0, 0, -0.002f);
             renderer.prepare();
             shader.start();
             renderer.render(entity, shader);
