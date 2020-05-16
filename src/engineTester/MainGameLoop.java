@@ -1,5 +1,6 @@
 package engineTester;
 
+import entities.Camera;
 import entities.Entity;
 import models.TexturedModel;
 import org.lwjgl.opengl.Display;
@@ -44,10 +45,14 @@ public class MainGameLoop {
 
         Entity entity = new Entity(staticModel, new Vector3f(0, 0, -1), 0, 0, 0, 1);
 
+        Camera camera = new Camera();
+
         while (!Display.isCloseRequested()) {
-            entity.increasePosition(0, 0, -0.1f);
+//            entity.increasePosition(0, 0, -0.1f);
+            camera.move();
             renderer.prepare();
             shader.start();
+            shader.loadViewMatrix(camera);
             renderer.render(entity, shader);
             shader.stop();
             DisplayManager.updateDisplay();

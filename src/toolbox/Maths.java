@@ -16,7 +16,7 @@ public class Maths {
         return matrix;
     }
 
-    public Matrix4f createViewMatrix(Camera camera) {
+    public static Matrix4f createViewMatrix(Camera camera) {
         Matrix4f viewMatrix = new Matrix4f();
         viewMatrix.setIdentity();
         Matrix4f.rotate((float) Math.toRadians(camera.getPitch()), new Vector3f(1, 0, 0), viewMatrix,
