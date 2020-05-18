@@ -3,6 +3,7 @@ package engineTester;
 import entities.Camera;
 import entities.Entity;
 import entities.Light;
+import entities.Player;
 import models.RawModel;
 import models.TexturedModel;
 import objConverter.ModelData;
@@ -64,8 +65,15 @@ public class MainGameLoop {
 
         Camera camera = new Camera();
         MasterRenderer renderer = new MasterRenderer();
+
+        RawModel bunnyModel = OBJLoader.loadObjModel("stanfordBunny", loader);
+        TexturedModel stanfordBunny = new TexturedModel(bunnyModel, new ModelTexture(loader.loadTexture("white")));
+        Player player = new Player(stanfordBunny, new Vector3f(100, 0, -50), 0, 0, 0, 1);
+
         while (!Display.isCloseRequested()) {
             camera.move();
+            player.move();
+            renderer.processEntity(player);
             renderer.processTerrain(terrain);
             renderer.processTerrain(terrain2);
             for (Entity entity : entities) {
