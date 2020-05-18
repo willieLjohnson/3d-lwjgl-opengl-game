@@ -47,7 +47,7 @@ public class Camera {
         return roll;
     }
 
-    private void calculateCameraPosition(float  horizDistance, float verticDistance) {
+    private void calculateCameraPosition(float horizDistance, float verticDistance) {
         float theta = player.getRotY() + angleAroundPlayer;
         float offsetX = (float) (horizDistance * Math.sin(Math.toRadians(theta)));
         float offsetZ = (float) (horizDistance * Math.cos(Math.toRadians(theta)));
@@ -78,6 +78,7 @@ public class Camera {
 
     private void calculateAngleAroundPlayer() {
         if (Mouse.isButtonDown(0)) {
+
             float angleChange = Mouse.getDX() * 0.3f;
             angleAroundPlayer -= angleChange;
         }
