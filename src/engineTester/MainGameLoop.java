@@ -12,6 +12,8 @@ import org.lwjgl.util.vector.Vector3f;
 import renderEngine.*;
 import terrains.Terrain;
 import textures.ModelTexture;
+import textures.TerrainTexture;
+import textures.TerrainTexturePack;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -20,8 +22,15 @@ import java.util.Random;
 public class MainGameLoop {
     public static void main(String[] args) {
         DisplayManager.createDisplay();
-
         Loader loader = new Loader();
+
+        TerrainTexture backgroundTexture = new TerrainTexture(loader.loadTexture("grassy"));
+        TerrainTexture rTexture = new TerrainTexture(loader.loadTexture("dirt"));
+        TerrainTexture gTexture = new TerrainTexture(loader.loadTexture("pinkFlowers"));
+        TerrainTexture bTexture = new TerrainTexture(loader.loadTexture("path"));
+
+        TerrainTexturePack texturePack = new TerrainTexturePack(backgroundTexture, rTexture, gTexture, bTexture);
+        TerrainTexture blendMap = new TerrainTexture(loader.loadTexture("blendMap"));
 
         ModelData treeData = OBJFileLoader.loadOBJ("lowPolyTree");
         RawModel treeRawModel = loader.loadToVao(treeData.getVertices(), treeData.getTextureCoords(),
@@ -50,8 +59,8 @@ public class MainGameLoop {
         }
         Light light = new Light(new Vector3f(3000, 2000, 2000), new Vector3f(1, 1, 1));
 
-        Terrain terrain = new Terrain(0, -1, loader, new ModelTexture(loader.loadTexture("grass")));
-        Terrain terrain2 = new Terrain(-1, -1, loader, new ModelTexture(loader.loadTexture("grass")));
+        Terrain terrain = new Terrain(0, -1, loader, texturePack, blendMap);
+        Terrain terrain2 = new Terrain(-1, -1, loader, texturePack, blendMap);
 
         Camera camera = new Camera();
         MasterRenderer renderer = new MasterRenderer();
