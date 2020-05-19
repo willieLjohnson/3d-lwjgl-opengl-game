@@ -33,34 +33,43 @@ public class MainGameLoop {
         TerrainTexturePack texturePack = new TerrainTexturePack(backgroundTexture, rTexture, gTexture, bTexture);
         TerrainTexture blendMap = new TerrainTexture(loader.loadTexture("blendMap"));
 
-        ModelData treeData = OBJFileLoader.loadOBJ("lowPolyTree");
-        RawModel treeRawModel = loader.loadToVao(treeData.getVertices(), treeData.getTextureCoords(),
-                treeData.getNormals(), treeData.getIndices());
+        ModelTexture treeTexture = new ModelTexture(loader.loadTexture("lowPolyTree"));
+        TexturedModel bobble = new TexturedModel(OBJLoader.loadObjModel("lowPolyTree", loader), treeTexture);
 
-        ModelData fernData = OBJFileLoader.loadOBJ("fern");
-        RawModel fernRawModel = loader.loadToVao(fernData.getVertices(), fernData.getTextureCoords(),
-                fernData.getNormals(), fernData.getIndices());
+        ModelTexture fernTextureAtlas = new ModelTexture(loader.loadTexture("fern"));
+        fernTextureAtlas.setNumberOfRows(2);
+        TexturedModel fern = new TexturedModel(OBJLoader.loadObjModel("fern", loader), fernTextureAtlas);
 
-        ModelData grassData = OBJFileLoader.loadOBJ("grassModel");
-        RawModel grassRawModel = loader.loadToVao(grassData.getVertices(), grassData.getTextureCoords(),
-                grassData.getNormals(), grassData.getIndices());
-
-        TexturedModel treeTexturedModel = new TexturedModel(treeRawModel, new ModelTexture(loader.loadTexture("lowPolyTree")));
-        TexturedModel fernTexturedModel = new TexturedModel(fernRawModel, new ModelTexture(loader.loadTexture("fern")));
-        TexturedModel grassTexturedModel = new TexturedModel(grassRawModel, new ModelTexture(loader.loadTexture("grassTexture")));
+        ModelTexture grassTexture = new ModelTexture(loader.loadTexture("grassTexture"));
+        TexturedModel grassTexturedModel = new TexturedModel(OBJLoader.loadObjModel("grassModel", loader), grassTexture);
         grassTexturedModel.getTexture().setUseFakeLighting(true);
-        fernTexturedModel.getTexture().setUseFakeLighting(true);
+
+        Terrain terrain = new Terrain(0, -1, loader, texturePack, blendMap, "heightMap");
 
         List<Entity> entities = new ArrayList<Entity>();
-        Random random = new Random();
-        for (int i = 0; i < 500; i++) {
-            entities.add(new Entity(treeTexturedModel, new Vector3f(random.nextFloat() * 800 - 400, 0, random.nextFloat() * -600), 0, 0, 0, 1));
-            entities.add(new Entity(fernTexturedModel, new Vector3f(random.nextFloat() * 800 - 400, 0, random.nextFloat() * -600), 0, 0, 0, 1));
-            entities.add(new Entity(grassTexturedModel, new Vector3f(random.nextFloat() * 800 - 400, 0, random.nextFloat() * -600), 0, 0, 0, 1));
+        Random random = new Random(676452);
+        for (int i = 0; i < 400; i++) {
+            if (i % 2 == 0) {
+                float x = random.nextFloat() * 800 - 400;
+                float z = random.nextFloat() * -600;
+                float y = terrain.getHeightOfTerrain(x, z);
+                entities.add(new Entity(fern, random.nextInt(4), new Vector3f(x, y, z), 0, random.nextFloat() * 360, 0, 0.9f));
+
+                x = random.nextFloat() * 800 - 400;
+                z = random.nextFloat() * -600;
+                y = terrain.getHeightOfTerrain(x, z);
+                entities.add(new Entity(grassTexturedModel, new Vector3f(x, y, z), 0, random.nextFloat() * 360, 0, 2f));
+            }
+            if (i % 5 == 0) {
+                float x = random.nextFloat() * 800 - 400;
+                float z = random.nextFloat() * -600;
+                float y = terrain.getHeightOfTerrain(x, z);
+                entities.add(new Entity(bobble, new Vector3f(x, y, z), 0, random.nextFloat() * 360, 0, random.nextFloat() * 0.1f + 0.6f));
+            }
         }
         Light light = new Light(new Vector3f(3000, 2000, 2000), new Vector3f(1, 1, 1));
 
-        Terrain terrain = new Terrain(0, -1, loader, texturePack, blendMap, "heightMap");
+
 //        Terrain terrain2 = new Terrain(-1, -1, loader, texturePack, blendMap, "heightMap");
 
 

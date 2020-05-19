@@ -4,6 +4,7 @@ import org.lwjgl.BufferUtils;
 import org.lwjgl.opengl.GL11;
 import org.lwjgl.opengl.GL20;
 import org.lwjgl.util.vector.Matrix4f;
+import org.lwjgl.util.vector.Vector2f;
 import org.lwjgl.util.vector.Vector3f;
 
 import java.io.BufferedReader;
@@ -40,13 +41,17 @@ public abstract class ShaderProgram {
 
         GL20.glUniform1f(location, value);
     }
+
     protected void loadInt(int location, int value) {
         GL20.glUniform1i(location, value);
     }
 
     protected void loadVector(int location, Vector3f vector) {
         GL20.glUniform3f(location, vector.x, vector.y, vector.z);
+    }
 
+    protected void load2DVector(int location, Vector2f vector) {
+        GL20.glUniform2f(location, vector.x, vector.y);
     }
 
     protected void loadBoolean(int location, boolean value) {
@@ -80,9 +85,9 @@ public abstract class ShaderProgram {
         GL20.glDeleteProgram(programID);
     }
 
-    protected  abstract void bindAttributes();
+    protected abstract void bindAttributes();
 
-    protected  void bindAttribute(int attribute, String variableName) {
+    protected void bindAttribute(int attribute, String variableName) {
         GL20.glBindAttribLocation(programID, attribute, variableName);
     }
 
