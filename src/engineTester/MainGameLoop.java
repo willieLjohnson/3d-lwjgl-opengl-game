@@ -70,11 +70,11 @@ public class MainGameLoop {
                 entities.add(new Entity(bobble, new Vector3f(x, y, z), 0, random.nextFloat() * 360, 0, random.nextFloat() * 0.1f + 1f));
             }
         }
-        Light light = new Light(new Vector3f(3000, 2000, 2000), new Vector3f(1, 1, 1));
-
-
-//        Terrain terrain2 = new Terrain(-1, -1, loader, texturePack, blendMap, "heightMap");
-
+        Light light = new Light(new Vector3f(0, 10000, -7000), new Vector3f(1, 1, 1));
+        List<Light> lights = new ArrayList<Light>();
+        lights.add(light);
+        lights.add(new Light(new Vector3f(-200, 10, -200), new Vector3f(10, 0, 0)));
+        lights.add(new Light(new Vector3f(200, 10, 200), new Vector3f(0, 0, 10)));
 
         MasterRenderer renderer = new MasterRenderer();
 
@@ -100,7 +100,7 @@ public class MainGameLoop {
             for (Entity entity : entities) {
                 renderer.processEntity(entity);
             }
-            renderer.render(light, camera);
+            renderer.render(lights, camera);
             guiRenderer.render(guis);
             DisplayManager.updateDisplay();
         }
