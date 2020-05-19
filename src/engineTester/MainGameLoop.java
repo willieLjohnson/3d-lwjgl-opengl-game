@@ -87,6 +87,9 @@ public class MainGameLoop {
         GuiTexture gui = new GuiTexture(loader.loadTexture("socuwan"), new Vector2f(0.5f, 0.5f), new Vector2f(0.25f, 0.25f));
         guis.add(gui);
 
+        GuiTexture gui2 = new GuiTexture(loader.loadTexture("thinmatrix"), new Vector2f(0.30f, 0.75f), new Vector2f(0.4f, 0.4f));
+        guis.add(gui2);
+
         GuiRenderer guiRenderer = new GuiRenderer(loader);
 
         while (!Display.isCloseRequested()) {
