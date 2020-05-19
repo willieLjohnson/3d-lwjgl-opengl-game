@@ -47,6 +47,9 @@ public class MainGameLoop {
         TexturedModel grassTexturedModel = new TexturedModel(OBJLoader.loadObjModel("grassModel", loader), grassTexture);
         grassTexturedModel.getTexture().setUseFakeLighting(true);
 
+        ModelTexture lampTexture = new ModelTexture(loader.loadTexture("lamp"));
+        TexturedModel lamp = new TexturedModel(OBJLoader.loadObjModel("lamp", loader), lampTexture);
+
         Terrain terrain = new Terrain(0, -1, loader, texturePack, blendMap, "heightMap");
 
         List<Entity> entities = new ArrayList<Entity>();
@@ -70,17 +73,21 @@ public class MainGameLoop {
                 entities.add(new Entity(bobble, new Vector3f(x, y, z), 0, random.nextFloat() * 360, 0, random.nextFloat() * 0.1f + 1f));
             }
         }
-        Light light = new Light(new Vector3f(0, 10000, -7000), new Vector3f(1, 1, 1));
         List<Light> lights = new ArrayList<Light>();
-        lights.add(light);
-        lights.add(new Light(new Vector3f(-200, 10, -200), new Vector3f(10, 0, 0)));
-        lights.add(new Light(new Vector3f(200, 10, 200), new Vector3f(0, 0, 10)));
+        lights.add(new Light(new Vector3f(0, 10000, -7000), new Vector3f(0.2f, 0.2f, 0.2f)));
+        lights.add(new Light(new Vector3f(185, 10, -293), new Vector3f(2, 0, 0), new Vector3f(1, 0.01f, 0.002f)));
+        lights.add(new Light(new Vector3f(370, 17, -300), new Vector3f(0, 2, 2), new Vector3f(1, 0.01f, 0.002f)));
+        lights.add(new Light(new Vector3f(293, 7, -305), new Vector3f(2, 2, 10), new Vector3f(1, 0.01f, 0.002f)));
+
+        entities.add(new Entity(lamp, new Vector3f(185, -4.7f, -293), 0, 0, 0, 1));
+        entities.add(new Entity(lamp, new Vector3f(370, -4.7f, -300), 0, 0, 0, 1));
+        entities.add(new Entity(lamp, new Vector3f(293, -4.7f, -305), 0, 0, 0, 1));
 
         MasterRenderer renderer = new MasterRenderer();
 
         RawModel playerModel = OBJLoader.loadObjModel("person", loader);
         TexturedModel person = new TexturedModel(playerModel, new ModelTexture(loader.loadTexture("playerTexture")));
-        Player player = new Player(person, new Vector3f(100, 0, -50), 0, 0, 0, 1);
+        Player player = new Player(person, new Vector3f(153, 5, -274), 0, 100, 0, 0.6f);
         Camera camera = new Camera(player);
 
         List<GuiTexture> guis = new ArrayList<GuiTexture>();
