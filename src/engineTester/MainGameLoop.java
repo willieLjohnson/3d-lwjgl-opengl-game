@@ -8,12 +8,13 @@ import guis.GuiRenderer;
 import guis.GuiTexture;
 import models.RawModel;
 import models.TexturedModel;
-import objConverter.ModelData;
-import objConverter.OBJFileLoader;
 import org.lwjgl.opengl.Display;
 import org.lwjgl.util.vector.Vector2f;
 import org.lwjgl.util.vector.Vector3f;
-import renderEngine.*;
+import renderEngine.DisplayManager;
+import renderEngine.Loader;
+import renderEngine.MasterRenderer;
+import renderEngine.OBJLoader;
 import terrains.Terrain;
 import textures.ModelTexture;
 import textures.TerrainTexture;
@@ -83,7 +84,7 @@ public class MainGameLoop {
         entities.add(new Entity(lamp, new Vector3f(370, -4.7f, -300), 0, 0, 0, 1));
         entities.add(new Entity(lamp, new Vector3f(293, -4.7f, -305), 0, 0, 0, 1));
 
-        MasterRenderer renderer = new MasterRenderer();
+        MasterRenderer renderer = new MasterRenderer(loader);
 
         RawModel playerModel = OBJLoader.loadObjModel("person", loader);
         TexturedModel person = new TexturedModel(playerModel, new ModelTexture(loader.loadTexture("playerTexture")));
@@ -91,11 +92,8 @@ public class MainGameLoop {
         Camera camera = new Camera(player);
 
         List<GuiTexture> guis = new ArrayList<GuiTexture>();
-        GuiTexture gui = new GuiTexture(loader.loadTexture("socuwan"), new Vector2f(0.5f, 0.5f), new Vector2f(0.25f, 0.25f));
+        GuiTexture gui = new GuiTexture(loader.loadTexture("health"), new Vector2f(-0.75f, 0.85f), new Vector2f(0.25f, 0.25f));
         guis.add(gui);
-
-        GuiTexture gui2 = new GuiTexture(loader.loadTexture("thinmatrix"), new Vector2f(0.30f, 0.75f), new Vector2f(0.4f, 0.4f));
-        guis.add(gui2);
 
         GuiRenderer guiRenderer = new GuiRenderer(loader);
 

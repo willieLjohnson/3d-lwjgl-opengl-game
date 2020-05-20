@@ -22,7 +22,7 @@ public class GuiRenderer {
                 1, 1,
                 1, -1
         };
-        quad = loader.loadToVao(positions);
+        quad = loader.loadToVao(positions, 2);
         shader = new GuiShader();
     }
 
