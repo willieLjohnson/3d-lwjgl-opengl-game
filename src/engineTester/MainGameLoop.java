@@ -99,13 +99,24 @@ public class MainGameLoop {
 
         GuiRenderer guiRenderer = new GuiRenderer(loader);
 
-        MousePicker picker = new MousePicker(camera, renderer.getProjectionMatrix());
+        MousePicker picker = new MousePicker(camera, renderer.getProjectionMatrix(), terrain);
+
+        Entity lampEntity = (new Entity(lamp, new Vector3f(293, -6.8f, -305), 0, 0, 0, 1));
+        entities.add(lampEntity);
+
+        Light light = (new Light(new Vector3f(293, 7, -305), new Vector3f(0, 2, 2), new Vector3f(1, 0.01f, 0.002f)));
+        lights.add(light);
 
         while (!Display.isCloseRequested()) {
             player.move(terrain);
             camera.move();
 
             picker.update();
+            Vector3f terrainPoint = picker.getCurrentTerrainPoint();
+            if (terrainPoint != null) {
+                lampEntity.setPosition(terrainPoint);
+                light.setPosition(new Vector3f(terrainPoint.x, terrainPoint.y + 15, terrainPoint.z));
+            }
 
             renderer.processEntity(player);
             renderer.processTerrain(terrain);
