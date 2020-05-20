@@ -8,6 +8,7 @@ import guis.GuiRenderer;
 import guis.GuiTexture;
 import models.RawModel;
 import models.TexturedModel;
+import org.lwjgl.input.Mouse;
 import org.lwjgl.opengl.Display;
 import org.lwjgl.util.vector.Vector2f;
 import org.lwjgl.util.vector.Vector3f;
@@ -19,6 +20,7 @@ import terrains.Terrain;
 import textures.ModelTexture;
 import textures.TerrainTexture;
 import textures.TerrainTexturePack;
+import toolbox.MousePicker;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -97,9 +99,14 @@ public class MainGameLoop {
 
         GuiRenderer guiRenderer = new GuiRenderer(loader);
 
+        MousePicker picker = new MousePicker(camera, renderer.getProjectionMatrix());
+
         while (!Display.isCloseRequested()) {
-            camera.move();
             player.move(terrain);
+            camera.move();
+
+            picker.update();
+
             renderer.processEntity(player);
             renderer.processTerrain(terrain);
             for (Entity entity : entities) {
