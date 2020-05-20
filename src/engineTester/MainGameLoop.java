@@ -53,26 +53,45 @@ public class MainGameLoop {
         ModelTexture lampTexture = new ModelTexture(loader.loadTexture("lamp"));
         TexturedModel lamp = new TexturedModel(OBJLoader.loadObjModel("lamp", loader), lampTexture);
 
-        Terrain terrain = new Terrain(0, -1, loader, texturePack, blendMap, "heightMap");
+        Terrain terrain1 = new Terrain(0, -1, loader, texturePack, blendMap, "heightMap");
+        Terrain terrain2 = new Terrain(-1, -1, loader, texturePack, blendMap, "heightMap");
+        Terrain terrain3 = new Terrain(0, 0, loader, texturePack, blendMap, "heightMap");
+        Terrain terrain4 = new Terrain(-1, 0, loader, texturePack, blendMap, "heightMap");
+
+        Terrain[][] terrains = new Terrain[2][2];
+        terrains[1][0] = terrain1;
+        terrains[0][0] = terrain2;
+        terrains[1][1] = terrain3;
+        terrains[0][1] = terrain4;
 
         List<Entity> entities = new ArrayList<Entity>();
         Random random = new Random(676452);
+        Terrain currentTerrain;
         for (int i = 0; i < 400; i++) {
             if (i % 2 == 0) {
                 float x = random.nextFloat() * 800 - 400;
                 float z = random.nextFloat() * -600;
-                float y = terrain.getHeightOfTerrain(x, z);
+                int gridX = (int) (x / Terrain.SIZE + 1);
+                int gridZ = (int) (z / Terrain.SIZE + 1);
+                currentTerrain = terrains[gridX][gridZ];
+                float y = currentTerrain.getHeightOfTerrain(x, z);
                 entities.add(new Entity(fern, random.nextInt(4), new Vector3f(x, y, z), 0, random.nextFloat() * 360, 0, 0.9f));
 
                 x = random.nextFloat() * 800 - 400;
                 z = random.nextFloat() * -600;
-                y = terrain.getHeightOfTerrain(x, z);
-                entities.add(new Entity(grassTexturedModel, new Vector3f(x, y, z), 0, random.nextFloat() * 360, 0, 2f));
+                gridX = (int) (x / Terrain.SIZE + 1);
+                gridZ = (int) (z / Terrain.SIZE + 1);
+                currentTerrain = terrains[gridX][gridZ];
+                y = currentTerrain.getHeightOfTerrain(x, z);
+                entities.add(new Entity(grassTexturedModel, new Vector3f(x, y, z), 0, random.nextFloat() * 360, 0, 0.9f));
             }
             if (i % 5 == 0) {
                 float x = random.nextFloat() * 800 - 400;
                 float z = random.nextFloat() * -600;
-                float y = terrain.getHeightOfTerrain(x, z);
+                int gridX = (int) (x / Terrain.SIZE + 1);
+                int gridZ = (int) (z / Terrain.SIZE + 1);
+                currentTerrain = terrains[gridX][gridZ];
+                float y = currentTerrain.getHeightOfTerrain(x, z);
                 entities.add(new Entity(bobble, new Vector3f(x, y, z), 0, random.nextFloat() * 360, 0, random.nextFloat() * 0.1f + 1f));
             }
         }
@@ -90,8 +109,9 @@ public class MainGameLoop {
 
         RawModel playerModel = OBJLoader.loadObjModel("person", loader);
         TexturedModel person = new TexturedModel(playerModel, new ModelTexture(loader.loadTexture("playerTexture")));
-        Player player = new Player(person, new Vector3f(153, 5, -274), 0, 100, 0, 0.6f);
+        Player player = new Player(person, new Vector3f(0, 5, 0), 0, 100, 0, 0.6f);
         Camera camera = new Camera(player);
+        entities.add(player);
 
         List<GuiTexture> guis = new ArrayList<GuiTexture>();
         GuiTexture gui = new GuiTexture(loader.loadTexture("health"), new Vector2f(-0.75f, 0.95f), new Vector2f(0.25f, 0.25f));
@@ -99,7 +119,7 @@ public class MainGameLoop {
 
         GuiRenderer guiRenderer = new GuiRenderer(loader);
 
-        MousePicker picker = new MousePicker(camera, renderer.getProjectionMatrix(), terrain);
+//        MousePicker picker = new MousePicker(camera, renderer.getProjectionMatrix(), terrain);
 
         Entity lampEntity = (new Entity(lamp, new Vector3f(293, -6.8f, -305), 0, 0, 0, 1));
         entities.add(lampEntity);
@@ -108,22 +128,27 @@ public class MainGameLoop {
         lights.add(light);
 
         while (!Display.isCloseRequested()) {
-            player.move(terrain);
+            int gridX = (int) (player.getPosition().x / Terrain.SIZE + 1);
+            int gridZ = (int) (player.getPosition().z / Terrain.SIZE + 1);
+            System.out.printf("GridX: %d -- GrixZ: %d %n ", gridX, gridZ);
+            player.move(terrains[gridX][gridZ]);
             camera.move();
+//            picker.update();
 
-            picker.update();
-            Vector3f terrainPoint = picker.getCurrentTerrainPoint();
-            if (terrainPoint != null) {
-                lampEntity.setPosition(terrainPoint);
-                light.setPosition(new Vector3f(terrainPoint.x, terrainPoint.y + 15, terrainPoint.z));
-            }
+            renderer.renderScene(entities, terrains, lights, camera);
 
-            renderer.processEntity(player);
-            renderer.processTerrain(terrain);
-            for (Entity entity : entities) {
-                renderer.processEntity(entity);
-            }
-            renderer.render(lights, camera);
+//            Vector3f terrainPoint = picker.getCurrentTerrainPoint();
+//            if (terrainPoint != null) {
+//                lampEntity.setPosition(terrainPoint);
+//                light.setPosition(new Vector3f(terrainPoint.x, terrainPoint.y + 15, terrainPoint.z));
+//            }
+//
+//            renderer.processEntity(player);
+//            renderer.processTerrain(terrain);
+//            for (Entity entity : entities) {
+//                renderer.processEntity(entity);
+//            }
+//
             guiRenderer.render(guis);
             DisplayManager.updateDisplay();
         }
