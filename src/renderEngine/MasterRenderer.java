@@ -56,11 +56,9 @@ public class MasterRenderer {
         GL11.glCullFace(GL11.GL_BACK);
     }
 
-    public void renderScene(List<Entity> entities, Terrain[][] terrains, List<Light> lights, Camera camera) {
-        for (int x = 0; x < 2; x++) {
-            for (int z = 0; z < 2; z++) {
-                processTerrain(terrains[x][z]);
-            }
+    public void renderScene(List<Entity> entities, List<Terrain> terrains, List<Light> lights, Camera camera) {
+        for (Terrain terrain : terrains) {
+            processTerrain(terrain);;
         }
         for (Entity entity : entities) {
             processEntity(entity);
