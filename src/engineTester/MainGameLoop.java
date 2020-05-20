@@ -92,7 +92,7 @@ public class MainGameLoop {
         Camera camera = new Camera(player);
 
         List<GuiTexture> guis = new ArrayList<GuiTexture>();
-        GuiTexture gui = new GuiTexture(loader.loadTexture("health"), new Vector2f(-0.75f, 0.85f), new Vector2f(0.25f, 0.25f));
+        GuiTexture gui = new GuiTexture(loader.loadTexture("health"), new Vector2f(-0.75f, 0.95f), new Vector2f(0.25f, 0.25f));
         guis.add(gui);
 
         GuiRenderer guiRenderer = new GuiRenderer(loader);
