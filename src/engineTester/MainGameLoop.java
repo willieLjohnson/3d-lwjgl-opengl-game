@@ -21,6 +21,9 @@ import textures.ModelTexture;
 import textures.TerrainTexture;
 import textures.TerrainTexturePack;
 import toolbox.MousePicker;
+import water.WaterRenderer;
+import water.WaterShader;
+import water.WaterTile;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -114,11 +117,17 @@ public class MainGameLoop {
         Camera camera = new Camera(player);
         entities.add(player);
 
+        WaterShader waterShader = new WaterShader();
+        WaterRenderer waterRenderer = new WaterRenderer(loader, waterShader, renderer.getProjectionMatrix());
+        List<WaterTile> waters = new ArrayList<WaterTile>();
+        waters.add(new WaterTile(75, -75, 0));
+
         List<GuiTexture> guis = new ArrayList<GuiTexture>();
         GuiTexture gui = new GuiTexture(loader.loadTexture("health"), new Vector2f(-0.75f, 0.95f), new Vector2f(0.25f, 0.25f));
         guis.add(gui);
 
         GuiRenderer guiRenderer = new GuiRenderer(loader);
+
 
         while (!Display.isCloseRequested()) {
             int gridX = (int) (player.getPosition().x / Terrain.SIZE + 1);
@@ -127,11 +136,12 @@ public class MainGameLoop {
             camera.move();
 
             renderer.renderScene(entities, terrains, lights, camera);
-
+            waterRenderer.render(waters, camera);
             guiRenderer.render(guis);
             DisplayManager.updateDisplay();
         }
 
+        waterShader.cleanUp();
         guiRenderer.cleanUp();
         renderer.cleanUp();
         loader.cleanUp();
