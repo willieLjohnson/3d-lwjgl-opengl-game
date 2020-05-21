@@ -119,10 +119,11 @@ public class MainGameLoop {
         Camera camera = new Camera(player);
         entities.add(player);
 
+        WaterFrameBuffers buffers = new WaterFrameBuffers();
         WaterShader waterShader = new WaterShader();
-        WaterRenderer waterRenderer = new WaterRenderer(loader, waterShader, renderer.getProjectionMatrix());
+        WaterRenderer waterRenderer = new WaterRenderer(loader, waterShader, renderer.getProjectionMatrix(), buffers);
         List<WaterTile> waters = new ArrayList<WaterTile>();
-        WaterTile water = new WaterTile(75, -75, 0);
+        WaterTile water = new WaterTile(254, -271, -6);
         waters.add(water);
 
 
@@ -132,16 +133,11 @@ public class MainGameLoop {
 
         GuiRenderer guiRenderer = new GuiRenderer(loader);
 
-        WaterFrameBuffers buffers = new WaterFrameBuffers();
-        GuiTexture refraction = new GuiTexture(buffers.getRefractionTexture(), new Vector2f(0.5f, 0.5f), new Vector2f(0.25f, 0.25f));
-        GuiTexture reflection = new GuiTexture(buffers.getReflectionTexture(), new Vector2f(-0.5f, 0.5f), new Vector2f(0.25f, 0.25f));
-        guis.add(refraction);
-        guis.add(reflection);
-
         while (!Display.isCloseRequested()) {
             int gridX = (int) (player.getPosition().x / Terrain.SIZE + 1);
             int gridZ = (int) (player.getPosition().z / Terrain.SIZE + 1);
             player.move(terrainMap[gridX][gridZ]);
+            System.out.println(player.getPosition());
             camera.move();
 
             GL11.glEnable(GL30.GL_CLIP_DISTANCE0);
@@ -162,7 +158,7 @@ public class MainGameLoop {
             // render scene
             GL11.glDisable(GL30.GL_CLIP_DISTANCE0);
             buffers.unbindCurrentFrameBuffer();
-            renderer.renderScene(entities, terrains, lights, camera, new Vector4f(0, -1, 0, 100000));
+            renderer.renderScene(entities, terrains, lights, camera, new Vector4f(0, -1, 0, 1000000));
             waterRenderer.render(waters, camera);
             guiRenderer.render(guis);
 
