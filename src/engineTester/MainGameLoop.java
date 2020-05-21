@@ -8,10 +8,12 @@ import guis.GuiRenderer;
 import guis.GuiTexture;
 import models.RawModel;
 import models.TexturedModel;
-import org.lwjgl.input.Mouse;
 import org.lwjgl.opengl.Display;
+import org.lwjgl.opengl.GL11;
+import org.lwjgl.opengl.GL30;
 import org.lwjgl.util.vector.Vector2f;
 import org.lwjgl.util.vector.Vector3f;
+import org.lwjgl.util.vector.Vector4f;
 import renderEngine.DisplayManager;
 import renderEngine.Loader;
 import renderEngine.MasterRenderer;
@@ -20,7 +22,7 @@ import terrains.Terrain;
 import textures.ModelTexture;
 import textures.TerrainTexture;
 import textures.TerrainTexturePack;
-import toolbox.MousePicker;
+import water.WaterFrameBuffers;
 import water.WaterRenderer;
 import water.WaterShader;
 import water.WaterTile;
@@ -120,7 +122,9 @@ public class MainGameLoop {
         WaterShader waterShader = new WaterShader();
         WaterRenderer waterRenderer = new WaterRenderer(loader, waterShader, renderer.getProjectionMatrix());
         List<WaterTile> waters = new ArrayList<WaterTile>();
-        waters.add(new WaterTile(75, -75, 0));
+        WaterTile water = new WaterTile(75, -75, 0);
+        waters.add(water);
+
 
         List<GuiTexture> guis = new ArrayList<GuiTexture>();
         GuiTexture gui = new GuiTexture(loader.loadTexture("health"), new Vector2f(-0.75f, 0.95f), new Vector2f(0.25f, 0.25f));
@@ -128,6 +132,11 @@ public class MainGameLoop {
 
         GuiRenderer guiRenderer = new GuiRenderer(loader);
 
+        WaterFrameBuffers buffers = new WaterFrameBuffers();
+        GuiTexture refraction = new GuiTexture(buffers.getRefractionTexture(), new Vector2f(0.5f, 0.5f), new Vector2f(0.25f, 0.25f));
+        GuiTexture reflection = new GuiTexture(buffers.getReflectionTexture(), new Vector2f(-0.5f, 0.5f), new Vector2f(0.25f, 0.25f));
+        guis.add(refraction);
+        guis.add(reflection);
 
         while (!Display.isCloseRequested()) {
             int gridX = (int) (player.getPosition().x / Terrain.SIZE + 1);
@@ -135,12 +144,32 @@ public class MainGameLoop {
             player.move(terrainMap[gridX][gridZ]);
             camera.move();
 
-            renderer.renderScene(entities, terrains, lights, camera);
+            GL11.glEnable(GL30.GL_CLIP_DISTANCE0);
+
+            // render reflection
+            buffers.bindReflectionFrameBuffer();
+            float distance = 2 * (camera.getPosition().y - water.getHeight());
+            camera.getPosition().y -= distance;
+            camera.invertPitch();
+            renderer.renderScene(entities, terrains, lights, camera, new Vector4f(0, 1, 0, -water.getHeight()));
+            camera.getPosition().y += distance;
+            camera.invertPitch();
+
+            // render refraction
+            buffers.bindRefractionFrameBuffer();
+            renderer.renderScene(entities, terrains, lights, camera, new Vector4f(0, -1, 0, water.getHeight()));
+
+            // render scene
+            GL11.glDisable(GL30.GL_CLIP_DISTANCE0);
+            buffers.unbindCurrentFrameBuffer();
+            renderer.renderScene(entities, terrains, lights, camera, new Vector4f(0, -1, 0, 100000));
             waterRenderer.render(waters, camera);
             guiRenderer.render(guis);
+
             DisplayManager.updateDisplay();
         }
 
+        buffers.cleanUp();
         waterShader.cleanUp();
         guiRenderer.cleanUp();
         renderer.cleanUp();
