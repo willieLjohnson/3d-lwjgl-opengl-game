@@ -35,5 +35,5 @@ void main(void) {
 
 
     out_Color = mix(reflectColor, refractColor, 0.5);
-
+    out_Color = mix(out_Color, vec4(0.0, 0.3, 0.5, 1.0), 0.2);
 }
