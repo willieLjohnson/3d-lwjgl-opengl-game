@@ -8,12 +8,14 @@ import guis.GuiRenderer;
 import guis.GuiTexture;
 import models.RawModel;
 import models.TexturedModel;
+import normalMappingObjConverter.NormalMappedObjLoader;
 import org.lwjgl.opengl.Display;
 import org.lwjgl.opengl.GL11;
 import org.lwjgl.opengl.GL30;
 import org.lwjgl.util.vector.Vector2f;
 import org.lwjgl.util.vector.Vector3f;
 import org.lwjgl.util.vector.Vector4f;
+import org.newdawn.slick.opengl.Texture;
 import renderEngine.DisplayManager;
 import renderEngine.Loader;
 import renderEngine.MasterRenderer;
@@ -44,25 +46,25 @@ public class MainGameLoop {
         TerrainTexturePack texturePack = new TerrainTexturePack(backgroundTexture, rTexture, gTexture, bTexture);
         TerrainTexture blendMap = new TerrainTexture(loader.loadTexture("blendMap"));
 
-        ModelTexture treeTexture = new ModelTexture(loader.loadTexture("pine"));
-        TexturedModel bobble = new TexturedModel(OBJLoader.loadObjModel("pine", loader), treeTexture);
+        ModelTexture treeTexture = new ModelTexture(loader.loadTexture("bobbleTree"));
+        TexturedModel bobble = new TexturedModel(OBJLoader.loadObjModel("bobbleTree", loader), treeTexture);
 
         ModelTexture fernTextureAtlas = new ModelTexture(loader.loadTexture("fern"));
         fernTextureAtlas.setNumberOfRows(2);
         TexturedModel fern = new TexturedModel(OBJLoader.loadObjModel("fern", loader), fernTextureAtlas);
 
         ModelTexture grassTexture = new ModelTexture(loader.loadTexture("grassTexture"));
-        TexturedModel grassTexturedModel = new TexturedModel(OBJLoader.loadObjModel("grassModel", loader), grassTexture);
-        grassTexturedModel.getTexture().setUseFakeLighting(true);
+        TexturedModel grassModel = new TexturedModel(OBJLoader.loadObjModel("grassModel", loader), grassTexture);
+        grassModel.getTexture().setUseFakeLighting(true);
 
         ModelTexture lampTexture = new ModelTexture(loader.loadTexture("lamp"));
         TexturedModel lamp = new TexturedModel(OBJLoader.loadObjModel("lamp", loader), lampTexture);
 
         List<Terrain> terrains = new ArrayList<Terrain>();
-        terrains.add(new Terrain(0, -1, loader, texturePack, blendMap, "heightMap"));
-        terrains.add(new Terrain(-1, -1, loader, texturePack, blendMap, "heightMap"));
-        terrains.add(new Terrain(0, 0, loader, texturePack, blendMap, "heightMap"));
-        terrains.add(new Terrain(-1, 0, loader, texturePack, blendMap, "heightMap"));
+        terrains.add(new Terrain(0, -1, loader, texturePack, blendMap, "1944_Hill_heightmap"));
+        terrains.add(new Terrain(-1, -1, loader, texturePack, blendMap, "1944_Hill_heightmap"));
+        terrains.add(new Terrain(0, 0, loader, texturePack, blendMap, "1944_Hill_heightmap"));
+        terrains.add(new Terrain(-1, 0, loader, texturePack, blendMap, "1944_Hill_heightmap"));
 
         Terrain[][] terrainMap = new Terrain[2][2];
         terrainMap[1][0] = terrains.get(0);
@@ -71,6 +73,15 @@ public class MainGameLoop {
         terrainMap[0][1] = terrains.get(3);
 
         List<Entity> entities = new ArrayList<Entity>();
+        List<Entity> normalMapEntites = new ArrayList<Entity>();
+
+        TexturedModel barrelModel = new TexturedModel(NormalMappedObjLoader.loadOBJ("barrel", loader), new ModelTexture(loader.loadTexture("barrel")));
+        barrelModel.getTexture().setNormalMap(loader.loadTexture("barrelNormal"));
+        barrelModel.getTexture().setShineDamper(10);
+        barrelModel.getTexture().setReflectivity(0.5f);
+
+        normalMapEntites.add(new Entity(barrelModel, new Vector3f(-214, 10, -536 ), 0, 0, 0, 1f));
+
         Random random = new Random(676452);
         Terrain currentTerrain;
         for (int i = 0; i < 400; i++) {
@@ -89,7 +100,7 @@ public class MainGameLoop {
                 gridZ = (int) (z / Terrain.SIZE + 1);
                 currentTerrain = terrainMap[gridX][gridZ];
                 y = currentTerrain.getHeightOfTerrain(x, z);
-                entities.add(new Entity(grassTexturedModel, new Vector3f(x, y, z), 0, random.nextFloat() * 360, 0, 0.9f));
+                entities.add(new Entity(grassModel, new Vector3f(x, y, z), 0, random.nextFloat() * 360, 0, random.nextFloat() * 3f + 1f));
             }
             if (i % 5 == 0) {
                 float x = random.nextFloat() * 800 - 400;
@@ -115,7 +126,7 @@ public class MainGameLoop {
 
         RawModel playerModel = OBJLoader.loadObjModel("person", loader);
         TexturedModel person = new TexturedModel(playerModel, new ModelTexture(loader.loadTexture("playerTexture")));
-        Player player = new Player(person, new Vector3f(216, 5, -247), 0, 100, 0, 0.6f);
+        Player player = new Player(person, new Vector3f(-214, 5, -536), 0, 100, 0, 0.6f);
         Camera camera = new Camera(player);
         entities.add(player);
 
@@ -123,8 +134,10 @@ public class MainGameLoop {
         WaterShader waterShader = new WaterShader();
         WaterRenderer waterRenderer = new WaterRenderer(loader, waterShader, renderer.getProjectionMatrix(), buffers);
         List<WaterTile> waters = new ArrayList<WaterTile>();
-        WaterTile water = new WaterTile(254, -271, -6);
+        WaterTile water = new WaterTile(-224, -536, -12);
+        WaterTile water2 = new WaterTile(0, 0, 0);
         waters.add(water);
+        waters.add(water2);
 
 
         List<GuiTexture> guis = new ArrayList<GuiTexture>();
@@ -147,18 +160,18 @@ public class MainGameLoop {
             float distance = 2 * (camera.getPosition().y - water.getHeight());
             camera.getPosition().y -= distance;
             camera.invertPitch();
-            renderer.renderScene(entities, terrains, lights, camera, new Vector4f(0, 1, 0, -water.getHeight() + 1f));
+            renderer.renderScene(entities, normalMapEntites, terrains, lights, camera, new Vector4f(0, 1, 0, -water.getHeight() + 1f));
             camera.getPosition().y += distance;
             camera.invertPitch();
 
             // render refraction
             buffers.bindRefractionFrameBuffer();
-            renderer.renderScene(entities, terrains, lights, camera, new Vector4f(0, -1, 0, water.getHeight() + 1f));
+            renderer.renderScene(entities, normalMapEntites, terrains, lights, camera, new Vector4f(0, -1, 0, water.getHeight() + 1f));
 
             // render scene
             GL11.glDisable(GL30.GL_CLIP_DISTANCE0);
             buffers.unbindCurrentFrameBuffer();
-            renderer.renderScene(entities, terrains, lights, camera, new Vector4f(0, -1, 0, 1000000));
+            renderer.renderScene(entities, normalMapEntites, terrains, lights, camera, new Vector4f(0, -1, 0, 1000000));
             waterRenderer.render(waters, camera, lights.get(0));
             guiRenderer.render(guis);
 
