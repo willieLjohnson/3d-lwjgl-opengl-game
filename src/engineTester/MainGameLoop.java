@@ -115,7 +115,7 @@ public class MainGameLoop {
 
         RawModel playerModel = OBJLoader.loadObjModel("person", loader);
         TexturedModel person = new TexturedModel(playerModel, new ModelTexture(loader.loadTexture("playerTexture")));
-        Player player = new Player(person, new Vector3f(0, 5, 0), 0, 100, 0, 0.6f);
+        Player player = new Player(person, new Vector3f(216, 5, -247), 0, 100, 0, 0.6f);
         Camera camera = new Camera(player);
         entities.add(player);
 
