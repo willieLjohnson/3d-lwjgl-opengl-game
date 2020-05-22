@@ -159,7 +159,7 @@ public class MainGameLoop {
             GL11.glDisable(GL30.GL_CLIP_DISTANCE0);
             buffers.unbindCurrentFrameBuffer();
             renderer.renderScene(entities, terrains, lights, camera, new Vector4f(0, -1, 0, 1000000));
-            waterRenderer.render(waters, camera);
+            waterRenderer.render(waters, camera, lights.get(0));
             guiRenderer.render(guis);
 
             DisplayManager.updateDisplay();
