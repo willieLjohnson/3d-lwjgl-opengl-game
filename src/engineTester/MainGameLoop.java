@@ -4,6 +4,9 @@ import entities.Camera;
 import entities.Entity;
 import entities.Light;
 import entities.Player;
+import fontMeshCreator.FontType;
+import fontMeshCreator.GUIText;
+import fontRendering.TextMaster;
 import guis.GuiRenderer;
 import guis.GuiTexture;
 import models.RawModel;
@@ -15,7 +18,6 @@ import org.lwjgl.opengl.GL30;
 import org.lwjgl.util.vector.Vector2f;
 import org.lwjgl.util.vector.Vector3f;
 import org.lwjgl.util.vector.Vector4f;
-import org.newdawn.slick.opengl.Texture;
 import renderEngine.DisplayManager;
 import renderEngine.Loader;
 import renderEngine.MasterRenderer;
@@ -29,6 +31,7 @@ import water.WaterRenderer;
 import water.WaterShader;
 import water.WaterTile;
 
+import java.io.File;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Random;
@@ -37,6 +40,13 @@ public class MainGameLoop {
     public static void main(String[] args) {
         DisplayManager.createDisplay();
         Loader loader = new Loader();
+        TextMaster.init(loader);
+
+		FontType font = new FontType(loader.loadTexture("harrington"), new File("res/harrington.fnt"));
+		GUIText text = new GUIText("This is some text!", 3f, font, new Vector2f(0f, 0f), 1f, true);
+		text.setColour(1, 0, 0);
+
+        // Terrain
 
         TerrainTexture backgroundTexture = new TerrainTexture(loader.loadTexture("grassy"));
         TerrainTexture rTexture = new TerrainTexture(loader.loadTexture("dirt"));
@@ -174,10 +184,12 @@ public class MainGameLoop {
             renderer.renderScene(entities, normalMapEntites, terrains, lights, camera, new Vector4f(0, -1, 0, 1000000));
             waterRenderer.render(waters, camera, lights.get(0));
             guiRenderer.render(guis);
+            TextMaster.render();
 
             DisplayManager.updateDisplay();
         }
 
+        TextMaster.cleanUp();
         buffers.cleanUp();
         waterShader.cleanUp();
         guiRenderer.cleanUp();
